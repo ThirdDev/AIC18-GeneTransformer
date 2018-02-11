@@ -10,9 +10,11 @@ namespace RunDearRun
         public List<Gene> Genes { get; private set; }
         public double AverageScore { get; private set; }
         public double MaxScore { get; private set; }
+        public string RootPath { get; private set; }
 
         public Generation(DirectoryInfo d)
         {
+            RootPath = d.FullName;
             Name = d.Name;
             Genes = d.GetDirectories().Select(x => new Gene(x)).OrderByDescending(x => x.Score).ToList();
             AverageScore = Genes.Select(x => x.Score).Where(x => x != double.MinValue).DefaultIfEmpty().Average();

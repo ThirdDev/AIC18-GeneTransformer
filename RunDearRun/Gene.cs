@@ -11,8 +11,8 @@ namespace RunDearRun
         public string Name { get; private set; }
         public double Score { get; private set; }
         public string ResultText { get; set; }
+        public string RootPath { get; private set; }
 
-        string fullPath;
         string attackerAgentArgs;
         string defenderAgentArgs;
         string attackerConfig;
@@ -25,7 +25,7 @@ namespace RunDearRun
         public Gene(DirectoryInfo x)
         {
             Name = x.Name;
-            fullPath = x.FullName;
+            RootPath = x.FullName;
             LoadResults(Path.Combine(x.FullName, @"defend-client\clientConfig.cfg.out"));
 
             attackerAgentArgs = LoadJsonAttribute(Path.Combine(x.FullName, @"attack-client\process-info\command.info"), "Args");
@@ -88,8 +88,8 @@ namespace RunDearRun
 
         public void Execute(int port)
         {
-            attackerConfig = CopyConfig(Path.Combine(fullPath, @"attack-client\clientConfig.cfg"));
-            defenderConfig = CopyConfig(Path.Combine(fullPath, @"defend-client\clientConfig.cfg"));
+            attackerConfig = CopyConfig(Path.Combine(RootPath, @"attack-client\clientConfig.cfg"));
+            defenderConfig = CopyConfig(Path.Combine(RootPath, @"defend-client\clientConfig.cfg"));
 
             string attArgs = attackerAgentArgs.Replace($"127.0.0.1 {serverPort} ", $"127.0.0.1 {port} ").Replace("clientConfig.cfg", attackerConfig);
             string defArgs = defenderAgentArgs.Replace($"127.0.0.1 {serverPort} ", $"127.0.0.1 {port} ").Replace("clientConfig.cfg", defenderConfig);

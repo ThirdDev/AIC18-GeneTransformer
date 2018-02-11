@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -44,11 +45,12 @@ namespace RunDearRun
 
         private void Init()
         {
+            ClearPreviousData();
             LoadProcesses();
             ShowData();
         }
 
-        private void ShowData()
+        private void ClearPreviousData()
         {
             listBox1.Items.Clear();
             listBox2.Items.Clear();
@@ -56,6 +58,11 @@ namespace RunDearRun
             button1.Enabled = false;
             detailsTextBox.Text = "";
 
+            processes.Clear();
+        }
+
+        private void ShowData()
+        {
             foreach (var item in processes)
             {
                 listBox1.Items.Add(item);
@@ -137,6 +144,35 @@ namespace RunDearRun
         {
             button1.Enabled = (listBox3.SelectedIndex >= 0);
             detailsTextBox.Text = (listBox3.SelectedItem as Gene).ResultText;
+        }
+
+        private void linkOpen1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Process.Start("explorer.exe", folderName);
+        }
+
+        private void linkOpen2_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (listBox1.SelectedItem == null)
+                return;
+
+            Process.Start("explorer.exe", (listBox1.SelectedItem as GeneticProcess).RootPath);
+        }
+
+        private void linkOpen3_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (listBox2.SelectedItem == null)
+                return;
+
+            Process.Start("explorer.exe", (listBox2.SelectedItem as Generation).RootPath);
+        }
+
+        private void linkOpen4_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (listBox3.SelectedItem == null)
+                return;
+
+            Process.Start("explorer.exe", (listBox3.SelectedItem as Gene).RootPath);
         }
     }
 }
