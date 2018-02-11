@@ -76,7 +76,7 @@ namespace RunDearRun
             try
             {
                 ResultText = File.ReadAllText(fileName);
-                if (double.TryParse(ResultText.Split(new string[] { Environment.NewLine }, StringSplitOptions.None)[2], out double score))
+                if (double.TryParse(ResultText.Split(new string[] { Environment.NewLine }, StringSplitOptions.None)[0], out double score))
                     Score = score;
             }
             catch (Exception ex)
