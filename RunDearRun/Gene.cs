@@ -10,6 +10,7 @@ namespace RunDearRun
     {
         public string Name { get; private set; }
         public double Score { get; private set; }
+        public string ResultText { get; set; }
 
         string attackerAgentArgs;
         string defenderAgentArgs;
@@ -21,7 +22,7 @@ namespace RunDearRun
         public Gene(DirectoryInfo x)
         {
             Name = x.Name;
-            Score = GetScore(Path.Combine(x.FullName, @"defend-client\clientConfig.cfg.out"));
+            LoadResults(Path.Combine(x.FullName, @"defend-client\clientConfig.cfg.out"));
 
             attackerAgentArgs = LoadJsonAttribute(Path.Combine(x.FullName, @"attack-client\process-info\command.info"), "Args");
             defenderAgentArgs = LoadJsonAttribute(Path.Combine(x.FullName, @"defend-client\process-info\command.info"), "Args");
@@ -44,15 +45,19 @@ namespace RunDearRun
             }
         }
 
-        private double GetScore(string fileName)
+        private void LoadResults(string fileName)
         {
             try
             {
-                if (double.TryParse(File.ReadAllText(fileName).Split(new string[] { Environment.NewLine }, StringSplitOptions.None)[2], out double score))
-                    return score;
+                ResultText = File.ReadAllText(fileName);
+                if (double.TryParse(ResultText.Split(new string[] { Environment.NewLine }, StringSplitOptions.None)[2], out double score))
+                    Score = score;
             }
-            catch { }
-            return double.MinValue;
+            catch (Exception ex)
+            {
+                ResultText += ex.Message;
+                Score = double.MinValue;
+            }
         }
 
         public void Execute(int port)

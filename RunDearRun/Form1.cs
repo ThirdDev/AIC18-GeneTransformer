@@ -54,6 +54,7 @@ namespace RunDearRun
             listBox2.Items.Clear();
             listBox3.Items.Clear();
             button1.Enabled = false;
+            detailsTextBox.Text = "";
 
             foreach (var item in processes)
             {
@@ -94,6 +95,7 @@ namespace RunDearRun
             listBox2.Items.Clear();
             listBox3.Items.Clear();
             button1.Enabled = false;
+            detailsTextBox.Text = "";
 
             foreach (var item in geneticProcess.Generations)
             {
@@ -113,6 +115,7 @@ namespace RunDearRun
 
             listBox3.Items.Clear();
             button1.Enabled = false;
+            detailsTextBox.Text = "";
 
             foreach (var item in generation.Genes)
             {
@@ -133,6 +136,7 @@ namespace RunDearRun
         private void listBox3_SelectedIndexChanged(object sender, EventArgs e)
         {
             button1.Enabled = (listBox3.SelectedIndex >= 0);
+            detailsTextBox.Text = (listBox3.SelectedItem as Gene).ResultText;
         }
     }
 }

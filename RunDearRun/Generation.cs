@@ -9,17 +9,19 @@ namespace RunDearRun
         public string Name { get; private set; }
         public List<Gene> Genes { get; private set; }
         public double AverageScore { get; private set; }
+        public double MaxScore { get; private set; }
 
         public Generation(DirectoryInfo d)
         {
             Name = d.Name;
             Genes = d.GetDirectories().Select(x => new Gene(x)).OrderByDescending(x => x.Score).ToList();
             AverageScore = Genes.Select(x => x.Score).Where(x => x != double.MinValue).DefaultIfEmpty().Average();
+            MaxScore = Genes.Select(x => x.Score).Where(x => x != double.MinValue).DefaultIfEmpty().Max();
         }
 
         public override string ToString()
         {
-            return $"{Name}: {AverageScore.ToString("F3")}";
+            return $"{Name} - Avg: {AverageScore.ToString("F3")}, Max: {MaxScore.ToString("F3")}";
         }
     }
 }
