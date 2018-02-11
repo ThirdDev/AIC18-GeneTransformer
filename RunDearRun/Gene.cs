@@ -12,8 +12,11 @@ namespace RunDearRun
         public double Score { get; private set; }
         public string ResultText { get; set; }
 
+        string fullPath;
         string attackerAgentArgs;
         string defenderAgentArgs;
+        string attackerConfig;
+        string defenderConfig;
         string javaPath = "C:\\ProgramData\\Oracle\\Java\\javapath\\java.EXE";
 
         int serverPort = -1;
@@ -22,12 +25,35 @@ namespace RunDearRun
         public Gene(DirectoryInfo x)
         {
             Name = x.Name;
+            fullPath = x.FullName;
             LoadResults(Path.Combine(x.FullName, @"defend-client\clientConfig.cfg.out"));
 
             attackerAgentArgs = LoadJsonAttribute(Path.Combine(x.FullName, @"attack-client\process-info\command.info"), "Args");
             defenderAgentArgs = LoadJsonAttribute(Path.Combine(x.FullName, @"defend-client\process-info\command.info"), "Args");
 
             int.TryParse(LoadJsonAttribute(Path.Combine(x.FullName, @"server\server.cfg"), "ClientsPort"), out serverPort);
+        }
+
+        private string CopyConfig(string file)
+        {
+            var path = Path.GetDirectoryName(file);
+            var fileName = Path.GetFileNameWithoutExtension(file);
+            var extension = Path.GetExtension(file);
+
+            int i = 2;
+            string newFile;
+            string newFileFullPath;
+            do
+            {
+                newFile = fileName + i.ToString();
+                newFileFullPath = Path.Combine(path, newFile + extension);
+                i++;
+            }
+            while (File.Exists(newFileFullPath));
+
+            File.Copy(file, newFileFullPath);
+
+            return newFile + extension;
         }
 
         private string LoadJsonAttribute(string file, string attr)
@@ -62,11 +88,14 @@ namespace RunDearRun
 
         public void Execute(int port)
         {
-            attackerAgentArgs = attackerAgentArgs.Replace($"127.0.0.1 {serverPort} ", $"127.0.0.1 {port} ");
-            defenderAgentArgs = defenderAgentArgs.Replace($"127.0.0.1 {serverPort} ", $"127.0.0.1 {port} ");
+            attackerConfig = CopyConfig(Path.Combine(fullPath, @"attack-client\clientConfig.cfg"));
+            defenderConfig = CopyConfig(Path.Combine(fullPath, @"defend-client\clientConfig.cfg"));
 
-            Execute(javaPath, attackerAgentArgs);
-            Execute(javaPath, defenderAgentArgs);
+            string attArgs = attackerAgentArgs.Replace($"127.0.0.1 {serverPort} ", $"127.0.0.1 {port} ").Replace("clientConfig.cfg", attackerConfig);
+            string defArgs = defenderAgentArgs.Replace($"127.0.0.1 {serverPort} ", $"127.0.0.1 {port} ").Replace("clientConfig.cfg", defenderConfig);
+
+            Execute(javaPath, attArgs);
+            Execute(javaPath, defArgs);
         }
 
         private void Execute(string executable, string args)
